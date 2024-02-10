@@ -4,6 +4,8 @@ import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { LinkUrl } from "../../components/LinkUrl";
 import { Table } from "../../components/Tabela";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export const Produtos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -39,12 +41,14 @@ export const Produtos = () => {
                                 produtos.map((produto, key) => {
                                     return (
                                         <tr key={key}>
-                                            <th scope="row">{produto.id}</th>
+                                            <td scope="row">{produto.id}</td>
                                             <td>{produto.nome}</td>
                                             <td>{produto.descricao}</td>
                                             <td>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                                             <td>{ (produto.desconto * 100).toFixed(0) + '%'}</td>
-                                            <td> <LinkUrl link_class="btn btn-success" link_nome={<FontAwesomeIcon icon="fas fa-store-alt" />} /> </td>
+                                            <td><LinkUrl link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} />
+                                                <LinkUrl link_class="btn btn-sm btn-danger" link_nome={<FontAwesomeIcon icon={faTrash} />} link_style={{ marginLeft: "5px"}}/> 
+                                            </td>
                                         </tr>
                                     )
                                 })

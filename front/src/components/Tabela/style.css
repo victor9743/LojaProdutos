@@ -1,0 +1,19 @@
+/* CSS */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd; /* Linha horizontal padrão */
+  }
+  
+  /* Adicionando linha vertical em resoluções menores */
+  @media screen and (max-width: 600px) {
+    .table th,
+    .table td {
+      border-right: 1px solid #ddd; /* Linha vertical */
+    }
+  }
