@@ -16,6 +16,7 @@ export const Auth = () => {
 
     localStorage.removeItem("usuario");
     localStorage.removeItem("acesso");
+    localStorage.removeItem("is_admin");
 
     useEffect(() => {
         fetch("http://localhost:3000/users")

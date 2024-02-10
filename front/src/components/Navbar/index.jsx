@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { LinkUrl } from "../Link";
+import { LinkUrl } from "../LinkUrl";
 export const Navbar = () => {
-    const [user, setUser] = useState(
-     [
-        {
-            usuario: localStorage.getItem('usuario')
-        }
-     ]   
-    )
+    const [user, setUser] = useState([])
+
+    useState(() => {
+        setUser({
+            usuario: localStorage.getItem('usuario'),
+            is_admin: localStorage.getItem('is_admin')
+        })
+    })
+
     return (
         <nav className="navbar navbar-expand-lg" style={{background: "#2C3E50"}}>
                 <div className="container-fluid">
@@ -27,23 +29,16 @@ export const Navbar = () => {
                                 <LinkUrl link_url="" link_class="nav-link" link_nome="Ofertas" link_style={{color: "white"}} />
                             </li>
                         </ul>
-                        <form className="d-flex">
-                            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li className="nav-item dropdown">
-                                    <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Dropdown
-                                    </a>
-                                    <ul className="dropdown-menu">
-                                        <li><a className="dropdown-item" href="#">Action</a></li>
-                                        <li><a className="dropdown-item" href="#">Another action</a></li>
-                                        <li><a className="dropdown-item" href="#">Something else here</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </form>
-                    </div>
-                    <div>
-
+                        <ul className="navbar-nav mr-auto mb-2 mb-lg-0">
+                            <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style={{color: "white"}}>
+                                    Olá {user.usuario}
+                                </a>
+                                <ul className="dropdown-menu">
+                                    <li><a className="dropdown-item" href="#">Sair</a></li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </nav>
