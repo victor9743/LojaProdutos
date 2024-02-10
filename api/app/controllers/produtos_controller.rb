@@ -5,9 +5,9 @@ class ProdutosController < ApplicationController
 
       render json: @produtos, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-      render json: { error: e.message }, status: :not_found
+      render json: { message: e.message }, status: :not_found
     rescue StandardError => e
-      render json: { error: e.message }, status: :internal_server_error
+      render json: { message: e.message }, status: :internal_server_error
     end
   end
 
@@ -17,9 +17,9 @@ class ProdutosController < ApplicationController
 
       render json: @produto, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-      render json: { error: e.message }, status: :not_found
+      render json: { message: e.message }, status: :not_found
     rescue StandardError => e
-      render json: { error: e.message }, status: :internal_server_error
+      render json: { message: e.message }, status: :internal_server_error
     end
   end
 
@@ -34,7 +34,7 @@ class ProdutosController < ApplicationController
     if @produto.save
       render json: { message: "produto salvo com sucesso" }, status: :created
     else
-      render json: @produto.errors, status: :unprocessable_entity
+      render json: { message: @produto.errors }, status: :unprocessable_entity
     end
   end
 
@@ -50,7 +50,7 @@ class ProdutosController < ApplicationController
 
       render json: { message: "produto atualizado com sucesso" }, status: :created
     else
-      render json: @produto.errors, status: :unprocessable_entity
+      render json: { message: @produto.errors }, status: :unprocessable_entity
     end
   end
 
@@ -58,9 +58,9 @@ class ProdutosController < ApplicationController
     @produto = Produto.find(params[:id])
 
     if @produto.destroy
-      render json: { message: "Produto removido com sucesso" }, status: :created
+      render json: { message: "produto removido com sucesso" }, status: :created
     else
-      render json: @produto.errors, status: :unprocessable_entity
+      render json: { message: @produto.errors }, status: :unprocessable_entity
     end
   end
 end
