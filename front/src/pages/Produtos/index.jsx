@@ -22,7 +22,7 @@ export const Produtos = () => {
             <AreaConteudo conteudo_titulo="Produtos" conteudo_corpo= {
                 <>
                     <div className="d-flex justify-content-end">
-                        <LinkUrl link_url="/produto/novo" link_class="btn btn-success" link_nome="Adicionar" link_style={{color: "white"}} />
+                        <LinkUrl link_url="/produtos/novo" link_class="btn btn-success" link_nome="Adicionar" link_style={{color: "white"}} />
                     </div>
                    <Table 
                         thead = {
@@ -45,9 +45,9 @@ export const Produtos = () => {
                                             <td>{produto.nome}</td>
                                             <td>{produto.descricao}</td>
                                             <td>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                                            <td>{ (produto.desconto * 100).toFixed(0) + '%'}</td>
+                                            <td>{produto.desconto}%</td>
                                             <td><LinkUrl link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} />
-                                                <LinkUrl link_class="btn btn-sm btn-danger" link_nome={<FontAwesomeIcon icon={faTrash} />} link_style={{ marginLeft: "5px"}}/> 
+                                                <LinkUrl link_class="btn btn-sm btn-danger" link_nome={<FontAwesomeIcon icon={faTrash} />} link_style={{ marginLeft: "2%"}}/> 
                                             </td>
                                         </tr>
                                     )
