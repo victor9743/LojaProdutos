@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import CryptoJS from 'crypto-js';
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
-import { Alert } from "../../components/Alert";
 import { AreaLogin } from "../../components/AreaLogin";
 
 
@@ -11,7 +10,6 @@ export const Auth = () => {
     const [usuario, setUsuario] = useState("");
     const [senha, setSenha] = useState("");
     const [usuarios, setUsuarios] = useState([]);
-    const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
 
     localStorage.removeItem("usuario");
@@ -34,13 +32,8 @@ export const Auth = () => {
             navigate("/produtos");
         } else {
             navigate("/");
-            setMensagem("usuário ou senha inválido(s)");
         }
     }
-
-    setTimeout(()=> {
-        setMensagem("");
-    }, 7000);
 
     return (
         <>
@@ -60,10 +53,6 @@ export const Auth = () => {
                         <Button botao_tipo="button" botao_class="btn btn-primary col-12" botao_funcao={login}  botao_texto={"Entrar"} />
                     </div>
             </AreaLogin>
-            {
-                mensagem && <Alert alert_mensagem={mensagem} alerta_class="alert alert-danger col-6" />
-            }
-            
         </>
     );
 

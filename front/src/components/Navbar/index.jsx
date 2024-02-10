@@ -23,7 +23,7 @@ export const Navbar = () => {
                                 <LinkUrl link_url="/produtos" link_class="nav-link" link_nome="Produtos" link_style={{color: "white"}} />
                             </li>
                             <li className="nav-item">
-                                <LinkUrl link_url="" link_class="nav-link" link_nome="Pedidos" link_style={{color: "white"}} />
+                                <LinkUrl link_url="/pedidos" link_class="nav-link" link_nome="Pedidos" link_style={{color: "white"}} />
                             </li>
                             <li className="nav-item dropdown">
                                 <LinkUrl link_url="" link_class="nav-link" link_nome="Ofertas" link_style={{color: "white"}} />

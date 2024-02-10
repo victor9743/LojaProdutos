@@ -29,7 +29,8 @@ class PedidosController < ApplicationController
       "qtd_produto" => params[:qtd_produto],
       "preco_final" => params[:preco_final],
       "user_id" => params[:user_id],
-      "desconto" => params[:desconto]
+      "desconto" => params[:desconto],
+      "atendimento" => params[:atendimento]
     })
 
     if @pedido.save
@@ -47,7 +48,8 @@ class PedidosController < ApplicationController
       "qtd_produto" => params[:qtd_produto],
       "preco_final" => params[:preco_final],
       "user_id" => params[:user_id],
-      "desconto" => params[:desconto]
+      "desconto" => params[:desconto],
+      "atendimento" => params[:atendimento]
     })
 
       render json: { message: "pedido atualizado com sucesso" }, status: :created

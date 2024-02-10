@@ -4,8 +4,9 @@ import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
-import CurrencyInput from "../../components/CurrencyInput";
 import { useParams } from "react-router-dom";
+import InputMask from 'react-input-mask';
+import { useNavigate } from "react-router-dom";
 
 export const Mostrar = () => {
     const [nome, setNome] = useState("");
@@ -13,14 +14,14 @@ export const Mostrar = () => {
     const [preco, setPreco] = useState(0);
     const [desconto, setDesconto] = useState("");
     const params = useParams();
-
+    const navigate = useNavigate();
     useEffect(() => {
         fetch(`http://localhost:3000/produtos/${params.id}`)
         .then((r) => r.json())
         .then((r) => {
             setNome(r.nome);
             setDescricao(r.nome);
-            setPreco((r.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+            setPreco(r.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
             setDesconto(r.desconto);
         });
     }, [params])
@@ -50,16 +51,50 @@ export const Mostrar = () => {
             body: JSON.stringify({
                 nome: nome,
                 descricao: descricao,
-                preco: parseFloat(preco.slice(2)),
+                preco: parseFloat(preco.slice(2).replace(',', '.')),
                 desconto: parseFloat(desconto)
             })
 
         })
         .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Erro:', error));
+        .then((data) => {
+            navigate("produtos");
+        })
+        .catch((error) => {
+            alert(error);
+        });
     }
 
+    const handleChange = (event) => {
+        const rawValue = event.target.value.replace(/[^0-9]/g, '');
+    
+        let formattedValue = '';
+        if (rawValue.length > 2) {
+          formattedValue = `${rawValue.slice(0, -2)},${rawValue.slice(-2)}`;
+        } else if (rawValue.length === 2) {
+          formattedValue = `0,${rawValue}`;
+        } else if (rawValue.length === 1) {
+          formattedValue = `0,0${rawValue}`;
+        }
+    
+        setPreco(formatarValorMonetario(formattedValue));
+    };
+
+    function formatarValorMonetario(valor) {
+        const valorNumerico = parseFloat(valor.replace(/[^\d,]/g, '').replace(',', '.'));
+    
+        if (isNaN(valorNumerico)) {
+            return '';
+        }
+    
+        const valorFormatado = valorNumerico.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+    
+        return valorFormatado;
+    }
+    
     return (
         <>
             <Navbar />
@@ -75,7 +110,7 @@ export const Mostrar = () => {
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="preco" className="form-label">Preço</label>
-                            <CurrencyInput placeholder="R$0.00" type="text" className="form-control" onChange={(e)=> { setPreco(e.target.value)}} value={preco} />
+                            <InputMask mask="" type="text" className="form-control" placeholder="R$ 0,00" id="money" name="money" value={preco} onChange={handleChange} />
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="desconto" className="form-label">Desconto</label>
