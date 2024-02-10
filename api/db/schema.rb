@@ -10,16 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_10_020659) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_10_024617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "ofertas", force: :cascade do |t|
+  create_table "oferta", force: :cascade do |t|
     t.string "nome"
     t.string "descricao"
     t.float "preco"
-    t.integer "produto_id", default: 0
-    t.integer "pedido_id", default: 0
+    t.integer "produto_id"
+    t.integer "pedido_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
