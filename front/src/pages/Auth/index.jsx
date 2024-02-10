@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CryptoJS from 'crypto-js';
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { Alert } from "../../components/Alert";
 import { AreaLogin } from "../../components/AreaLogin";
 
+
 export const Auth = () => {
     const [usuario, setUsuario] = useState("");
     const [senha, setSenha] = useState("");
     const [usuarios, setUsuarios] = useState([]);
     const [mensagem, setMensagem] = useState("");
+    const navigate = useNavigate();
+
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("acesso");
 
     useEffect(() => {
         fetch("http://localhost:3000/users")
@@ -19,15 +25,19 @@ export const Auth = () => {
 
     const login = () => {
         if (usuarios.find(user => user.usuario === usuario  && user.password === CryptoJS.MD5(senha).toString())) {
-            console.log("pode logar")
+            localStorage.setItem("usuario", usuario);
+            localStorage.setItem("acesso", true);
+
+            navigate("/produtos");
         } else {
+            navigate("/");
             setMensagem("usuário ou senha inválido(s)");
         }
     }
 
     setTimeout(()=> {
         setMensagem("");
-    }, 5000);
+    }, 7000);
 
     return (
         <>
