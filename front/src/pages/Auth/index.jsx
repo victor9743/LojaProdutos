@@ -24,10 +24,12 @@ export const Auth = () => {
     }, []);
 
     const login = () => {
-        if (usuarios.find(user => user.usuario === usuario  && user.password === CryptoJS.MD5(senha).toString())) {
-            localStorage.setItem("usuario", usuario);
+        const user = usuarios.find(user => user.usuario === usuario  && user.password === CryptoJS.MD5(senha).toString());
+        if (user) {
+            localStorage.setItem("usuario", user.usuario);
             localStorage.setItem("acesso", true);
-
+            localStorage.setItem("is_admin", user.is_admin);
+            
             navigate("/produtos");
         } else {
             navigate("/");

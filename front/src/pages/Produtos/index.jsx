@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
+import { AreaConteudo } from "../../components/AreaConteudo";
 
 export const Produtos = () => {
     const [produtos, setProdutos] = useState([]);
@@ -11,10 +12,12 @@ export const Produtos = () => {
         .then((r) => setProdutos(r))
     }, []);
 
-    console.log(produtos);
     return (
         <>
             <Navbar />
+            <AreaConteudo conteudo_titulo="Produtos" conteudo_corpo= {
+                <div>Corpo</div>
+            } />
             {/* <div className="card container" style={{marginTop: "80px"}}> 
                 <div className="container mt-3">
                     <h3>Produtos</h3>
