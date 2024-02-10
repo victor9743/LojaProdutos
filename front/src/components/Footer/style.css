@@ -1,0 +1,24 @@
+/* styles.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 0 auto;
+    /* O conteúdo principal da sua página */
+}
+
+footer {
+    background-color: #2C3E50;
+    color: #fff;
+    padding-top: 18px;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
