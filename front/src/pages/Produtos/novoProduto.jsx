@@ -13,7 +13,6 @@ export const NovoProduto = () => {
     const [desconto, SetDesconto] = useState("");
 
     const salvar = () => {
-        console.log(parseFloat(desconto));
         fetch('http://localhost:3000/produtos', {
             method: "POST",
             headers: {

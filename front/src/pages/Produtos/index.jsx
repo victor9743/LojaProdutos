@@ -4,6 +4,7 @@ import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { LinkUrl } from "../../components/LinkUrl";
 import { Table } from "../../components/Tabela";
+import { Button } from "../../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -15,6 +16,10 @@ export const Produtos = () => {
         .then((r) => r.json())
         .then((r) => setProdutos(r))
     }, []);
+
+    const remover_produto = (e) => {
+        console.log(e.target.value);
+    }
 
     return (
         <>
@@ -46,8 +51,9 @@ export const Produtos = () => {
                                             <td>{produto.descricao}</td>
                                             <td>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                                             <td>{produto.desconto}%</td>
-                                            <td><LinkUrl link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} />
-                                                <LinkUrl link_class="btn btn-sm btn-danger" link_nome={<FontAwesomeIcon icon={faTrash} />} link_style={{ marginLeft: "2%"}}/> 
+                                            <td>
+                                                <LinkUrl link_url={`/produtos/mostrar/${produto.id}`} link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} link_style={{marginRight: "3%"}} />
+                                                <Button botao_class="btn btn-sm btn-danger" botao_texto={<FontAwesomeIcon icon={faTrash} />} botao_tipo="button" botao_value={produto.id} botao_funcao={remover_produto}/>
                                             </td>
                                         </tr>
                                     )
@@ -58,9 +64,7 @@ export const Produtos = () => {
                         }
                     /> 
                 </>
-                
             } />
-            
             
             <Footer />
 

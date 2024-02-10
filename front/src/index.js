@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Auth } from './pages/Auth';
 import { Produtos } from './pages/Produtos';
 import { NovoProduto } from './pages/Produtos/novoProduto';
+import { Mostrar } from './pages/Produtos/mostrarProduto';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,6 +14,7 @@ root.render(
       <Route path='/' element={<Auth />} />
       <Route path='/produtos' element={<Produtos />} />
       <Route path='/produtos/novo' element={<NovoProduto />} />
+      <Route path='/produtos/mostrar/:id' element={<Mostrar />} />
     </Routes>
   </BrowserRouter>
 );
