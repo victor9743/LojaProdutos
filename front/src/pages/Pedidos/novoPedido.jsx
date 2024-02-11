@@ -87,11 +87,14 @@ export const NovoPedido = () => {
                                                         <label><strong>Preço:</strong></label><br/>
                                                         <span>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                                                     </div>
-                                                    <div>
-                                                        <label><strong>Preço com desconto:</strong></label><br/>
-                                                        <span>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} </span>
-                                                        <span className="text-success"><FontAwesomeIcon icon={faArrowDown} /> 
-                                                        { calculaValorDesconto (produto.preco, produto.desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} {produto.desconto}%</span>
+                                                    <div className="text-success">
+                                                        <label className="text-dark"><strong>Preço com desconto:</strong></label><br/>
+                                                        <span style={{ marginRight: "5px"}}>
+                                                            { calculaValorDesconto (produto.preco, produto.desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
+                                                        </span>
+                                                        <span > 
+                                                            <FontAwesomeIcon icon={faArrowDown} /> {produto.desconto}%
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div className="card-footer text-body-secondary d-flex justify-content-between">
