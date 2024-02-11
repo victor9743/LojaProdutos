@@ -4,7 +4,7 @@ import CryptoJS from 'crypto-js';
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { AreaLogin } from "../../components/AreaLogin";
-
+import { Footer } from "../../components/Footer";
 
 export const Auth = () => {
     const [usuario, setUsuario] = useState("");
@@ -53,6 +53,7 @@ export const Auth = () => {
                         <Button botao_tipo="button" botao_class="btn btn-primary col-12" botao_funcao={login}  botao_texto={"Entrar"} />
                     </div>
             </AreaLogin>
+            <Footer />
         </>
     );
 
