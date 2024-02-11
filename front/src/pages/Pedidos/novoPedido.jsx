@@ -4,7 +4,6 @@ import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
-import InputMask from 'react-input-mask';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartPlus, faCartArrowDown, faArrowDown } from "@fortawesome/free-solid-svg-icons";
@@ -13,8 +12,11 @@ export const NovoPedido = () => {
     const [produtos, setProdutos] = useState([]);
     const [carrinho, setCarrinho] = useState([]);
     const [pedido, setPedido] = useState([]);
-    let array_produtos = []
+    const [checkedesc, setCheckedesc] = useState(false);
+    const [valordesconto, setValordesconto] = useState(0);
+    const array_desconto = [];
     const navigate = useNavigate();
+    
 
     useEffect(() => {
         fetch('http://localhost:3000/produtos')
@@ -22,6 +24,8 @@ export const NovoPedido = () => {
         .then((r) => {
             setProdutos(r);
         })
+        localStorage.removeItem("qtdProdutos")
+        localStorage.removeItem("qtdPedidos")
     }, [])
 
     const salvar = () => {
@@ -66,19 +70,74 @@ export const NovoPedido = () => {
 
     }
 
-    const quantidadeProduto = (produto_id, quantidade) => {        
+    const quantidadeProduto = (produtoId, quantidade) => {
+        let qtdProdutos = localStorage.getItem("qtdProdutos");     
         if(quantidade > 0) {
-            if (array_produtos.find((p) => p.id === produto_id)) {
-                for (let i =0; i <array_produtos.length; i ++ ) {
-                    if (array_produtos[i].id === produto_id) {
-                        array_produtos[i] = {id: array_produtos[i].id, qtd: quantidade}
+            if (qtdProdutos) {
+                qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
+
+                qtdProdutos.forEach((p, key) => {
+                    if (p.id === produtoId) {
+                        qtdProdutos[key].qtd = quantidade
+                    } else {
+                        qtdProdutos[key +1] = { id: produtoId, qtd: quantidade }
                     }
-                }
+                    
+                    localStorage.setItem("qtdProdutos", JSON.stringify(qtdProdutos));
+                });
 
             } else {
-                array_produtos.push({id: produto_id, qtd: quantidade});
+                localStorage.setItem("qtdProdutos", JSON.stringify([{id: produtoId, qtd: quantidade}]));
             }
         }
+    }
+
+    const descontoProduto = (produtoId, desconto) => {    
+        let qtdPedidos = localStorage.getItem("qtdPedidos");
+
+        if (desconto) {
+            let produto =  produtos.find((p) => p.id === produtoId);
+            setCheckedesc(desconto);
+            let valorFinal = calculaValorDesconto(produto.preco, produto.desconto);
+
+            setValordesconto(valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+
+            if (qtdPedidos) {
+                qtdPedidos = JSON.parse(localStorage.getItem("qtdPedidos"));
+
+                qtdPedidos.forEach((p, key) => {
+                    if (p.id === produtoId) {
+                        qtdPedidos[key].valorFinal = valorFinal
+                    } else {
+                        qtdPedidos[key +1] = { id: produtoId, valorFinal: valorFinal }
+                    }
+                    
+                    localStorage.setItem("qtdPedidos", JSON.stringify(qtdPedidos));
+                });
+
+            } else {
+                localStorage.setItem("qtdPedidos", JSON.stringify([{id: produtoId, valorFinal: valorFinal}]));
+            }
+
+        } else {
+            setCheckedesc(false);
+            setValordesconto(0);
+
+            if (qtdPedidos) {
+                qtdPedidos = JSON.parse(localStorage.getItem("qtdPedidos"));
+                qtdPedidos = qtdPedidos.filter(p => p.id !== produtoId);
+                localStorage.setItem("qtdPedidos", JSON.stringify(qtdPedidos));
+            }
+        }
+    }
+
+    const salvarPedido = () => {
+    //     "produto_id" => params[:produto_id],
+    //   "qtd_produto" => params[:qtd_produto],
+    //   "preco_final" => params[:preco_final],
+    //   "desconto" => params[:desconto],
+    //   "atendimento" => params[:atendimento]
+        console.log(carrinho);
     }
 
     return (
@@ -163,11 +222,15 @@ export const NovoPedido = () => {
                                                                 />
                                                             </div>
                                                             <div className="col-md-4">
-                                                                <input type="checkbox" onClick={(e) => console.log(e.target.checked)} /> Aplicar Desconto ?
-                                                                
+                                                                <input type="checkbox" onClick={(e) => descontoProduto(c.id, e.target.checked)} /> Aplicar Desconto ?
+                                                                {checkedesc &&  (
+                                                                    <div>
+                                                                        Desconto aplicado
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                             <div className="col-md-4">
-                                                                <label>Valor Final: {c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</label>
+                                                                <label>Valor Final: {valordesconto == 0 ? c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : valordesconto}</label>
 
                                                             </div>
                                                         </div>
@@ -175,8 +238,8 @@ export const NovoPedido = () => {
                                                 )
                                             }) }
                                         </div>
-                                        <div>
-                                            <button>Finalizar pedido</button>
+                                        <div className="d-flex justify-content-end p-3">
+                                            <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvarPedido} botao_texto="Finalizar Pedido" />
                                         </div>
                                     </div>
                                 </div>

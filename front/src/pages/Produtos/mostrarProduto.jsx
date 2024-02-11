@@ -58,7 +58,7 @@ export const Mostrar = () => {
         })
         .then(response => response.json())
         .then((data) => {
-            navigate("produtos");
+            navigate("/");
         })
         .catch((error) => {
             alert(error);

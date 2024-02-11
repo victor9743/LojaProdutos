@@ -11,7 +11,7 @@ export const Navbar = () => {
     })
 
     return (
-        <nav className="navbar navbar-expand-lg" style={{background: "#2C3E50"}}>
+        <nav className="navbar navbar-expand-lg navbar-dark" style={{background: "#2C3E50"}}>
                 <div className="container-fluid">
                     <a className="navbar-brand" href="#"><i className="fa fa-store-alt"></i></a>
                         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,7 @@ export const Navbar = () => {
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <LinkUrl link_url="/produtos" link_class="nav-link" link_nome="Produtos" link_style={{color: "white"}} />
+                                <LinkUrl link_url="/" link_class="nav-link" link_nome="Produtos" link_style={{color: "white"}} />
                             </li>
                             <li className="nav-item">
                                 <LinkUrl link_url="/pedidos" link_class="nav-link" link_nome="Pedidos" link_style={{color: "white"}} />

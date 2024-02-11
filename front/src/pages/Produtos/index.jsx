@@ -70,7 +70,7 @@ export const Produtos = () => {
                                     )
                                 })
                             ) : (
-                                <tr><td colSpan="5">Nenhum produto cadastrado</td></tr>
+                                <tr><td colSpan="6">Nenhum produto cadastrado</td></tr>
                             )
                         }
                     /> 

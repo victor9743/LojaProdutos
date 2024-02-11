@@ -30,7 +30,7 @@ export const NovoProduto = () => {
 
         })
         .then(response => response.json())
-        .then(data => navigate("/produtos"))
+        .then(data => navigate("/"))
         .catch((error) => {
             navigate("/produtos/novo");
             alert(error.message);
