@@ -1,12 +1,15 @@
 import './style.css';
 export const Footer = () => {
     return (
-        <footer>
-            <div className="container">
-                <div className="copyright">
-                    <p>&copy; Loja de produtos 2024</p>
+        <div className='body'>
+            <footer>
+                <div className="container">
+                    <div className="copyright text-center">
+                        <p>&copy; Loja de produtos 2024</p>
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        </div>
+        
     );
 }

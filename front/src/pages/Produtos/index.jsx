@@ -17,7 +17,7 @@ export const Produtos = () => {
         .then((r) => setProdutos(r))
     }, [produtos, setProdutos]);
 
-    const remover_produto = (e) => {
+    const RemoverProduto = (e) => {
         fetch(`http://localhost:3000/produtos/${e.target.value}`, {
             method: "DELETE",
             headers: {
@@ -64,7 +64,7 @@ export const Produtos = () => {
                                             <td>{produto.desconto}%</td>
                                             <td>
                                                 <LinkUrl link_url={`/produtos/mostrar/${produto.id}`} link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} link_style={{marginRight: "3%"}} />
-                                                <Button botao_class="btn btn-sm btn-danger" botao_texto={<FontAwesomeIcon icon={faTrash} />} botao_tipo="button" botao_value={produto.id} botao_funcao={remover_produto}/>
+                                                <Button botao_class="btn btn-sm btn-danger" botao_texto={<FontAwesomeIcon icon={faTrash} />} botao_tipo="button" botao_value={produto.id} botao_funcao={RemoverProduto}/>
                                             </td>
                                         </tr>
                                     )

@@ -1,24 +1,21 @@
 /* styles.css */
-
-body {
+.body {
     margin: 0;
     padding: 0;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    min-height: 18vh;
 }
 
-.content {
-    flex: 1 0 auto;
-    /* O conteúdo principal da sua página */
+.container {
+    flex: 1;
 }
 
 footer {
     background-color: #2C3E50;
     color: #fff;
-    padding-top: 18px;
-    text-align: center;
+    padding: 18px;
     width: 100%;
     position: fixed;
     bottom: 0;
-}
+  }

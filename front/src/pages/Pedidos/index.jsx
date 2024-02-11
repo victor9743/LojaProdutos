@@ -45,6 +45,7 @@ export const Pedidos = () => {
                         thead = {
                             <tr>
                                 <th scope="col">#</th>
+                                <th scope="col">Atendimento</th>
                                 <th scope="col">Opções</th>
                             </tr>
                         } 
@@ -55,6 +56,7 @@ export const Pedidos = () => {
                                     return (
                                         <tr key={key}>
                                             <td scope="row">{pedido.id}</td>
+                                            <td scope="row">{pedido.atendimento}</td>
                                             <td>
                                                 <LinkUrl link_url={`/pedidos/mostrar/${pedido.id}`} link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} link_style={{marginRight: "3%"}} />
                                                 <Button botao_class="btn btn-sm btn-danger" botao_texto={<FontAwesomeIcon icon={faTrash} />} botao_tipo="button" botao_value={pedido.id} botao_funcao={remover_pedido}/>
