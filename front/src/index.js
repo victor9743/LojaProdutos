@@ -8,6 +8,8 @@ import { MostrarProduto } from './pages/Produtos/mostrarProduto';
 import { Pedidos } from './pages/Pedidos';
 import { NovoPedido } from './pages/Pedidos/novoPedido';
 import { MostrarPedido } from './pages/Pedidos/mostrarPedido';
+import { Ofertas } from './pages/Ofertas';
+import { NovaOferta } from './pages/Ofertas/novaOferta';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,6 +21,9 @@ root.render(
       <Route path='/pedidos' element={<Pedidos />} />
       <Route path='/pedidos/novo' element={<NovoPedido />} />
       <Route path='/pedidos/mostrar/:id' element={<MostrarPedido />} />
+      <Route path='/ofertas' element={<Ofertas />} />
+      <Route path='/ofertas/novo' element={<NovaOferta />} />
+      {/* <Route path='/pedidos/mostrar/:id' element={<NovaOferta />} /> */}
     </Routes>
   </BrowserRouter>
 );
