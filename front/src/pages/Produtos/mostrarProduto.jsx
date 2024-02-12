@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import InputMask from 'react-input-mask';
 import { useNavigate } from "react-router-dom";
 
-export const Mostrar = () => {
+export const MostrarProduto = () => {
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [preco, setPreco] = useState(0);

@@ -3,7 +3,7 @@ export const AreaConteudo = ({conteudo_titulo, conteudo_corpo}) => {
         <div className="card container col-md-8 m-auto mt-5" style={{ height: "40%" }}>
             <div className="row container pt-3">
                 <div className="col-md-6">
-                    <h3>{conteudo_titulo}</h3>
+                    <h4>{conteudo_titulo}</h4>
                 </div>
             </div>
             

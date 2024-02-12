@@ -12,8 +12,8 @@ export const NovoPedido = () => {
     const [produtos, setProdutos] = useState([]);
     const [carrinho, setCarrinho] = useState([]);
     const [pedido, setPedido] = useState([]);
-    const [checkedesc, setCheckedesc] = useState(false);
-    const [valordesconto, setValordesconto] = useState(0);
+    const [inputvalorfinal, setInputValorFinal] = useState([]);
+    const [save, setSave] = useState(false);
     const navigate = useNavigate();
     
 
@@ -27,9 +27,10 @@ export const NovoPedido = () => {
         localStorage.removeItem("qtdPedidos")
     }, [])
 
-    const salvar = () => {
-    
-    }
+
+    // useEffect(() => {
+    //     setInputValorFinal(inputvalorfinal)
+    // },[ inputvalorfinal]);
 
     // funcao que adiciona ou remove item do carrinho
     const carrinhoFunction = (item, opcao) => {
@@ -38,6 +39,10 @@ export const NovoPedido = () => {
         } else {
             const novoCarrinho = carrinho.filter((c) => c.id !== item);
             setCarrinho(novoCarrinho);
+
+            if(novoCarrinho.length === 0){
+                setSave(false);
+            }
         }
     }
 
@@ -69,77 +74,62 @@ export const NovoPedido = () => {
 
     }
 
-    const quantidadeProduto = (produtoId, quantidade) => {
-        let qtdProdutos = localStorage.getItem("qtdProdutos");     
-        if(quantidade > 0) {
+    const quantidadeProduto = (produtoId, quantidade, preco) => {
+        let qtdProdutos = localStorage.getItem("qtdProdutos");
+        let valorFinal = quantidade * preco;
+
+        if (quantidade > 0) {
             if (qtdProdutos) {
                 qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
 
+                let found = false;
                 qtdProdutos.forEach((p, key) => {
                     if (p.id === produtoId) {
                         qtdProdutos[key].qtd = quantidade
-                    } else {
-                        qtdProdutos[key +1] = { id: produtoId, qtd: quantidade }
+                        qtdProdutos[key].valorFinal = valorFinal
+                        qtdProdutos[key].valorFinalMonetario = valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                        found = true;
                     }
-                    
-                    localStorage.setItem("qtdProdutos", JSON.stringify(qtdProdutos));
                 });
 
+                if (!found) {
+                    qtdProdutos.push({ id: produtoId, qtd: quantidade, valorFinal: valorFinal, valorFinalMonetario: valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) });
+                }
+
+                localStorage.setItem("qtdProdutos", JSON.stringify(qtdProdutos));
             } else {
-                localStorage.setItem("qtdProdutos", JSON.stringify([{id: produtoId, qtd: quantidade}]));
+                localStorage.setItem("qtdProdutos", JSON.stringify([{ id: produtoId, qtd: quantidade, valorFinal: valorFinal, valorFinalMonetario: valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }]));
             }
         }
+        setSave(true)
+    }
+    const valorFinal = (id) => {
+        console.log(inputvalorfinal);
+        let qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
+        console.log(qtdProdutos);
+        // console.log(inputvalorfinal[id]);
+        // return inputvalorfinal[id].toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    const descontoProduto = (produtoId, desconto) => {    
-        let qtdPedidos = localStorage.getItem("qtdPedidos");
+    const salvar = () => {
 
-        if (desconto) {
-            let produto =  produtos.find((p) => p.id === produtoId);
-            setCheckedesc(desconto);
-            let valorFinal = calculaValorDesconto(produto.preco, produto.desconto);
-            // setCarrinho(prevState => [...prevState, produtos.find(produto => produto.id === item)]);
-            setValordesconto(valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+        let qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
+        
+        fetch('http://localhost:3000/pedidos', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                produtos: qtdProdutos
+            })
+        })
+        .then(response => response.json())
+        .then(data => navigate("/pedidos"))
+        .catch((error) => {
+            navigate("/pedidos/novo");
+        });
 
-            if (qtdPedidos) {
-                qtdPedidos = JSON.parse(localStorage.getItem("qtdPedidos"));
-
-                qtdPedidos.forEach((p, key) => {
-                    if (p.id === produtoId) {
-                        qtdPedidos[key].valorFinal = valorFinal
-                    } else {
-                        qtdPedidos[key +1] = { id: produtoId, valorFinal: valorFinal }
-                    }
-                    
-                    localStorage.setItem("qtdPedidos", JSON.stringify(qtdPedidos));
-                });
-
-            } else {
-                localStorage.setItem("qtdPedidos", JSON.stringify([{id: produtoId, valorFinal: valorFinal}]));
-            }
-
-        } else {
-            setCheckedesc(false);
-            setValordesconto(0);
-
-            console.log(produtoId);
-            console.log(carrinho);
-
-            if (qtdPedidos) {
-                qtdPedidos = JSON.parse(localStorage.getItem("qtdPedidos"));
-                qtdPedidos = qtdPedidos.filter(p => p.id !== produtoId);
-                localStorage.setItem("qtdPedidos", JSON.stringify(qtdPedidos));
-            }
-        }
-    }
-
-    const salvarPedido = () => {
-    //     "produto_id" => params[:produto_id],
-    //   "qtd_produto" => params[:qtd_produto],
-    //   "preco_final" => params[:preco_final],
-    //   "desconto" => params[:desconto],
-    //   "atendimento" => params[:atendimento]
-        console.log(carrinho);
     }
 
     return (
@@ -169,15 +159,23 @@ export const NovoPedido = () => {
                                                             <label><strong>Preço:</strong></label><br/>
                                                             <span>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                                                         </div>
-                                                        <div className="text-success">
-                                                            <label className="text-dark"><strong>Preço com desconto:</strong></label><br/>
-                                                            <span style={{ marginRight: "5px"}}>
-                                                                { calculaValorDesconto (produto.preco, produto.desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
-                                                            </span>
-                                                            <span > 
-                                                                <FontAwesomeIcon icon={faArrowDown} /> {produto.desconto}%
-                                                            </span>
-                                                        </div>
+                                                        { produto.desconto_ativo ? (
+                                                                <div className="text-success">
+                                                                    <label className="text-dark"><strong>Preço com desconto:</strong></label><br/>
+                                                                    <span style={{ marginRight: "5px"}}>
+                                                                        { calculaValorDesconto (produto.preco, produto.desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
+                                                                    </span>
+                                                                    <span > 
+                                                                        <FontAwesomeIcon icon={faArrowDown} /> {produto.desconto}%
+                                                                    </span>
+                                                                </div>
+                                                            ): (
+                                                                <div className="text-success">
+                                                                    <label className="text-dark">Nenhum desconto atribuido</label>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        
                                                     </div>
                                                     <div className="text-body-secondary d-flex justify-content-between">
                                                         <button className="btn btn-sm btn-success bg-success col-6" onClick={()=> carrinhoFunction(produto.id, "+")} disabled = {disabledAddCarrinho(produto.id)} ><FontAwesomeIcon icon={faCartPlus} /></button>
@@ -218,24 +216,26 @@ export const NovoPedido = () => {
                                                                 <label>Descrição:</label> 
                                                                 <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={c.descricao} />
                                                             </div>
-                                                            <div className="col-12 row mt-2">
-                                                                <div className="col-md-6">
-                                                                    <label>Quantidade</label>
-                                                                    <input type="number"
-                                                                    className="form-control"
-                                                                    placeholder="Informe a quantidade" min="1"
-                                                                    onChange={(e) => quantidadeProduto (c.id, e.target.value)}
-                                                                    value="1"
-                                                                    />
-                                                                </div>
-                                                                <div className="col-md-6">
-                                                                    <input type="checkbox" onClick={(e) => descontoProduto(c.id, e.target.checked)} /> Aplicar Desconto?
-                                                                </div>
+                                                            <div className="col-md-6">
+                                                                <label>Informe a Quantidade</label>
+                                                                <input type="number"
+                                                                className="form-control"
+                                                                placeholder="Informe a quantidade" 
+                                                                min="1"
+                                                                onChange={(e) => quantidadeProduto (c.id, e.target.value, c.preco)}
+                                                                />
                                                             </div>
-                                                            
-                                                            <div className="col-md-4 mt-3">
+                                                            <div className="col-md-6">
                                                                 <label>Valor Final: </label>
-                                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={valordesconto === 0 ? c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : valordesconto} />
+                                                                <Input 
+                                                                input_tipo="text" 
+                                                                input_class="form-control" 
+                                                                input_disabled={true}
+                                                                // input_value={ c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
+                                                                input_value={ 
+                                                                    inputvalorfinal.length === 0 ? c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : valorFinal(c.id)
+                                                                }
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -243,7 +243,9 @@ export const NovoPedido = () => {
                                             }) }
                                         </div>
                                         <div className="d-flex justify-content-end p-3">
-                                            <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvarPedido} botao_texto="Finalizar Pedido" />
+                                            { save  && 
+                                                <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Finalizar Pedido" />
+                                            }
                                         </div>
                                     </div>
                                 </div>
