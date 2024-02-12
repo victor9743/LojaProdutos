@@ -15,7 +15,7 @@ export const Produtos = () => {
         fetch("http://localhost:3000/produtos")
         .then((r) => r.json())
         .then((r) => setProdutos(r))
-    }, [produtos, setProdutos]);
+    }, []);
 
     const RemoverProduto = (e) => {
         fetch(`http://localhost:3000/produtos/${e.target.value}`, {
@@ -61,7 +61,7 @@ export const Produtos = () => {
                                             <td>{produto.nome}</td>
                                             <td>{produto.descricao}</td>
                                             <td>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                                            <td>{produto.desconto}%</td>
+                                            <td>{produto.desconto}% - {produto.desconto_ativo ? "Ativo" : "Inativo"}</td>
                                             <td>
                                                 <LinkUrl link_url={`/produtos/mostrar/${produto.id}`} link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} link_style={{marginRight: "3%"}} />
                                                 <Button botao_class="btn btn-sm btn-danger" botao_texto={<FontAwesomeIcon icon={faTrash} />} botao_tipo="button" botao_value={produto.id} botao_funcao={RemoverProduto}/>

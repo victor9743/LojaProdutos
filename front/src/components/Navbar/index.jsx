@@ -29,16 +29,6 @@ export const Navbar = () => {
                                 <LinkUrl link_url="" link_class="nav-link" link_nome="Ofertas" link_style={{color: "white"}} />
                             </li>
                         </ul>
-                        <ul className="navbar-nav mr-auto mb-2 mb-lg-0">
-                            <li className="nav-item dropdown">
-                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style={{color: "white"}}>
-                                    Olá {user.usuario}
-                                </a>
-                                <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#">Sair</a></li>
-                                </ul>
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </nav>

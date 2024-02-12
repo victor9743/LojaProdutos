@@ -13,8 +13,10 @@ export const Mostrar = () => {
     const [descricao, setDescricao] = useState("");
     const [preco, setPreco] = useState(0);
     const [desconto, setDesconto] = useState("");
+    const [descontoAtivo , setDescontoAtivo] = useState();
     const params = useParams();
     const navigate = useNavigate();
+
     useEffect(() => {
         fetch(`http://localhost:3000/produtos/${params.id}`)
         .then((r) => r.json())
@@ -23,6 +25,7 @@ export const Mostrar = () => {
             setDescricao(r.nome);
             setPreco(r.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
             setDesconto(r.desconto);
+            setDescontoAtivo(r.desconto_ativo);
         });
     }, [params])
 
@@ -40,7 +43,11 @@ export const Mostrar = () => {
 
     useEffect(() => {
         setDesconto(desconto);
-    },[desconto])
+    },[desconto]);
+
+    useEffect(() => {
+        setDescontoAtivo(descontoAtivo);
+    }, [descontoAtivo])
 
     const salvar = () => {
         fetch(`http://localhost:3000/produtos/${params.id}`, {
@@ -52,7 +59,8 @@ export const Mostrar = () => {
                 nome: nome,
                 descricao: descricao,
                 preco: parseFloat(preco.slice(2).replace(',', '.')),
-                desconto: parseFloat(desconto)
+                desconto: parseFloat(desconto),
+                descontoAtivo: descontoAtivo
             })
 
         })
@@ -100,6 +108,9 @@ export const Mostrar = () => {
             <Navbar />
                 <AreaConteudo conteudo_titulo="Adicionar Produto" conteudo_corpo={
                     <div className="row">
+                        <div className="col-12 mb-3 d-flex justify-content-end">
+                            <Button botao_tipo="submit" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>
+                        </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="nome" className="form-label">Nome</label>
                             <Input input_tipo="text" input_class="form-control" input_id="nome" input_funcao={(e)=> { setNome(e.target.value) }} input_value={nome} />
@@ -116,8 +127,8 @@ export const Mostrar = () => {
                             <label htmlFor="desconto" className="form-label">Desconto</label>
                             <Input input_tipo="text" input_class="form-control" input_id="desconto" input_funcao={(e)=> { setDesconto(e.target.value) }} input_value={desconto} />
                         </div>
-                        <div className="col-12 mb-3 d-flex justify-content-end">
-                            <Button botao_tipo="submit" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>
+                        <div className="col-12 d-flex justify-content-end">
+                            <input className="mr-3" type="checkbox" onClick={(e) => {setDescontoAtivo(e.target.checked)}} checked={descontoAtivo} /> Ativar desconto ?
                         </div>
                     </div>
                 }/>

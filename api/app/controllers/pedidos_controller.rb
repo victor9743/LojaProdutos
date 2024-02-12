@@ -25,15 +25,17 @@ class PedidosController < ApplicationController
 
   def create
     @pedido = Pedido.new({
-      "produto_id" => params[:produto_id],
-      "qtd_produto" => params[:qtd_produto],
-      "preco_final" => params[:preco_final],
-      "user_id" => params[:user_id],
-      "desconto" => params[:desconto],
-      "atendimento" => params[:atendimento]
+      "numero_pedido" => params[:numero_pedido],
     })
 
     if @pedido.save
+      PedidoProduto.create(
+        "pedido_id" => @pedido.id,
+        "produto_id" => params[:produto_id],
+        "qtd_produto" => params[:qtd_produto],
+        "preco_final" => params[:preco_final],
+        "desconto" => params[:desconto]
+      )
       render json: { message: "pedido salvo com sucesso" }, status: :created
     else
       render json: { message: @pedido.errors }, status: :unprocessable_entity
@@ -41,15 +43,13 @@ class PedidosController < ApplicationController
   end
 
   def update
-    @pedido = Pedido.find(params[:id])
+    @pedido = Pedido.find(params[:pedido_id])
 
-    if @pedido.update({
+    if PedidoProduto.where(pedido_id: @pedido.id).update({
       "produto_id" => params[:produto_id],
       "qtd_produto" => params[:qtd_produto],
       "preco_final" => params[:preco_final],
-      "user_id" => params[:user_id],
-      "desconto" => params[:desconto],
-      "atendimento" => params[:atendimento]
+      "desconto" => params[:desconto]
     })
 
       render json: { message: "pedido atualizado com sucesso" }, status: :created

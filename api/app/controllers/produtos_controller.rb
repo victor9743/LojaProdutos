@@ -1,7 +1,7 @@
 class ProdutosController < ApplicationController
   def index
     begin
-      @produtos = Produto.all
+      @produtos = Produto.order(id: :desc).all
 
       render json: @produtos, status: :ok
     rescue ActiveRecord::RecordNotFound => e
@@ -28,7 +28,8 @@ class ProdutosController < ApplicationController
       "nome" => params[:nome],
       "descricao" => params[:descricao],
       "preco" => params[:preco],
-      "desconto" => params[:desconto]
+      "desconto" => params[:desconto],
+      "desconto_ativo" => params[:descontoAtivo]
     })
 
     if @produto.save
@@ -45,7 +46,8 @@ class ProdutosController < ApplicationController
       "nome" => params[:nome],
       "descricao" => params[:descricao],
       "preco" => params[:preco],
-      "desconto" => params[:desconto]
+      "desconto" => params[:desconto],
+      "desconto_ativo" => params[:descontoAtivo]
     })
 
       render json: { message: "produto atualizado com sucesso" }, status: :created

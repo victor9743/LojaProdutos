@@ -12,7 +12,8 @@ export const NovoProduto = () => {
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [preco, setPreco] = useState("");
-    const [desconto, SetDesconto] = useState("");
+    const [desconto, setDesconto] = useState("");
+    const [descontoAtivo , setDescontoAtivo] = useState();
     const navigate = useNavigate();
 
     const salvar = () => {
@@ -25,7 +26,8 @@ export const NovoProduto = () => {
                 nome: nome,
                 descricao: descricao,
                 preco: parseFloat(preco.slice(2).replace(',', '.')),
-                desconto: parseFloat(desconto)
+                desconto: parseFloat(desconto),
+                descontoAtivo: descontoAtivo
             })
 
         })
@@ -69,7 +71,6 @@ export const NovoProduto = () => {
     
         return valorFormatado;
     }
-    
 
     return (
         <>
@@ -90,13 +91,15 @@ export const NovoProduto = () => {
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="preco" className="form-label">Preço</label>
-                            <InputMask mask="" type="text" className="form-control" placeholder="R$ 0,00" id="money" name="money" value={preco} onChange={handleChange} />
+                            <InputMask type="text" className="form-control" placeholder="R$ 0,00" id="money" name="money" value={preco} onChange={handleChange} />
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="desconto" className="form-label">Desconto</label>
-                            <Input input_tipo="text" input_class="form-control" input_id="desconto" input_funcao={(e)=> { SetDesconto(e.target.value) }} />
+                            <Input input_tipo="text" input_class="form-control" input_id="desconto" input_funcao={(e)=> { setDesconto(e.target.value) }} />
                         </div>
-                        
+                        <div className="col-12 d-flex justify-content-end">
+                            <input className="mr-3" type="checkbox" onClick={(e) => {setDescontoAtivo(e.target.checked)}} /> Ativar desconto ?
+                        </div>
                     </div>
                 }/>
             <Footer />

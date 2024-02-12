@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
-import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
+import { Input } from "../../components/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartPlus, faCartArrowDown, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 
@@ -14,7 +14,6 @@ export const NovoPedido = () => {
     const [pedido, setPedido] = useState([]);
     const [checkedesc, setCheckedesc] = useState(false);
     const [valordesconto, setValordesconto] = useState(0);
-    const array_desconto = [];
     const navigate = useNavigate();
     
 
@@ -99,7 +98,7 @@ export const NovoPedido = () => {
             let produto =  produtos.find((p) => p.id === produtoId);
             setCheckedesc(desconto);
             let valorFinal = calculaValorDesconto(produto.preco, produto.desconto);
-
+            // setCarrinho(prevState => [...prevState, produtos.find(produto => produto.id === item)]);
             setValordesconto(valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
             if (qtdPedidos) {
@@ -122,6 +121,9 @@ export const NovoPedido = () => {
         } else {
             setCheckedesc(false);
             setValordesconto(0);
+
+            console.log(produtoId);
+            console.log(carrinho);
 
             if (qtdPedidos) {
                 qtdPedidos = JSON.parse(localStorage.getItem("qtdPedidos"));
@@ -209,29 +211,31 @@ export const NovoPedido = () => {
                                                 return (
                                                     <div className="card mb-3" key={key}>
                                                         <div className="card-header">
-                                                            {c.nome}
+                                                            Produto: {c.nome}
                                                         </div>
                                                         <div className="card-body row">
-                                                            <div className="col-md-4">
-                                                                Descrição: {c.descricao}
+                                                            <div className="col-12 mb-3">
+                                                                <label>Descrição:</label> 
+                                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={c.descricao} />
                                                             </div>
-                                                            <div className="col-md-4">
-                                                                <input type="number" 
-                                                                placeholder="Informe a quantidade" min="1"
-                                                                onChange={(e) => quantidadeProduto (c.id, e.target.value)}
-                                                                />
+                                                            <div className="col-12 row mt-2">
+                                                                <div className="col-md-6">
+                                                                    <label>Quantidade</label>
+                                                                    <input type="number"
+                                                                    className="form-control"
+                                                                    placeholder="Informe a quantidade" min="1"
+                                                                    onChange={(e) => quantidadeProduto (c.id, e.target.value)}
+                                                                    value="1"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-md-6">
+                                                                    <input type="checkbox" onClick={(e) => descontoProduto(c.id, e.target.checked)} /> Aplicar Desconto?
+                                                                </div>
                                                             </div>
-                                                            <div className="col-md-4">
-                                                                <input type="checkbox" onClick={(e) => descontoProduto(c.id, e.target.checked)} /> Aplicar Desconto ?
-                                                                {checkedesc &&  (
-                                                                    <div>
-                                                                        Desconto aplicado
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <div className="col-md-4">
-                                                                <label>Valor Final: {valordesconto == 0 ? c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : valordesconto}</label>
-
+                                                            
+                                                            <div className="col-md-4 mt-3">
+                                                                <label>Valor Final: </label>
+                                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={valordesconto === 0 ? c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : valordesconto} />
                                                             </div>
                                                         </div>
                                                     </div>
