@@ -7,6 +7,8 @@ import { Button } from "../../components/Button";
 import InputMask from 'react-input-mask';
 import { useNavigate } from "react-router-dom";
 import { Table } from "../../components/Tabela";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 
 export const NovaOferta = () => {
@@ -15,6 +17,7 @@ export const NovaOferta = () => {
     const [preco, setPreco] = useState("");
     const [ofertatipo, setOfertaTipo] = useState("");
     const [listoferta, setListOferta] = useState([]);
+    const [oferta, setOferta] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,7 +42,7 @@ export const NovaOferta = () => {
     }, [ofertatipo])
 
     const salvar = () => {
-        fetch('http://localhost:3000/produtos', {
+        fetch('http://localhost:3000/ofertas', {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -48,13 +51,15 @@ export const NovaOferta = () => {
                 nome: nome,
                 descricao: descricao,
                 preco: parseFloat(preco.slice(2).replace(',', '.')),
+                tipoOferta: ofertatipo,
+                ofertaId: oferta
             })
 
         })
         .then(response => response.json())
-        .then(data => navigate("/"))
+        .then(data => navigate("/ofertas"))
         .catch((error) => {
-            navigate("/produtos/novo");
+            navigate("/ofertas/novo");
             alert(error.message);
         });
     }
@@ -92,13 +97,41 @@ export const NovaOferta = () => {
         return valorFormatado;
     }
 
+    const verifOferta = (id, opcao) => {
+        if (opcao === "+"){
+            setOferta(id);
+        } else {
+            setOferta("");
+        }
+
+    }
+
+    const disabledAddOferta = (item) => {
+        console.log(item);
+        if (oferta === item) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    const disabledRemoveOferta = (item) => {
+        if (oferta) {
+            if (oferta === item) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     return (
         <>
             <Navbar />
                 <AreaConteudo conteudo_titulo="Adicionar Oferta" conteudo_corpo={
                     <div className="row">
                         <div className="col-12 mb-3 d-flex justify-content-end">
-                            <Button botao_tipo="submit" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>
+                            <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="nome" className="form-label">Nome</label>
@@ -122,6 +155,7 @@ export const NovaOferta = () => {
                             </select>
                         </div>
                         <div className="col-12">
+                         { (listoferta.length > 0 && ofertatipo) && (
                             <Table 
                                 thead = {
                                     <tr>
@@ -136,27 +170,27 @@ export const NovaOferta = () => {
                                 }
 
                                 tbody = {
-                                    listoferta.length > 0 && ofertatipo ? (
-                                        listoferta.map((list, key) => {
-                                            return (
-                                                <tr key={key}>
-                                                    <td>{list.id}</td>
-                                                    {ofertatipo === "1" ? 
-                                                        <td>{list.nome}</td>
-                                                        :
-                                                        <td>{list.numero_pedido}</td>
-                                                    }
-                                                    <td>Adicionar</td>
-                                                </tr>
-                                            )
-                                        })
-                                    ) : (
-                                        <tr><td colSpan="6">Sem Informações</td></tr>
-                                    )
+                                    listoferta.map((list, key) => {
+                                        return (
+                                            <tr key={key}>
+                                                <td>{list.id}</td>
+                                                {ofertatipo === "1" ? 
+                                                    <td>{list.nome}</td>
+                                                    :
+                                                    <td>{list.numero_pedido}</td>
+                                                }
+                                                <td>
+                                                    <button className="btn btn-sm btn-success bg-success m-2" onClick={()=> verifOferta(list.id, "+")} disabled = {disabledAddOferta(list.id)} ><FontAwesomeIcon icon={faPlus} /></button>
+                                                    
+                                                    <button className="btn btn-danger btn-sm bg-danger" onClick={() => verifOferta(list.id, "-")} disabled={disabledRemoveOferta(list.id)} ><FontAwesomeIcon icon={faTrash} /></button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
                                 }
                                 
                             />
-                            
+                         )}
                         </div>
                     </div>
                 }/>

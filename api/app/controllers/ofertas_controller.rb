@@ -24,6 +24,7 @@ class OfertasController < ApplicationController
   end
 
   def create
+
     @oferta = Oferta.new({
       "nome" => params[:nome],
       "descricao" => params[:descricao],
@@ -31,6 +32,8 @@ class OfertasController < ApplicationController
       "produto_id" => params[:produto_id],
       "pedido_id" => params[:pedido_id]
     })
+
+    params[:tipoOferta] == "1" ? @oferta.produto_id = params[:ofertaId] : @oferta.pedido_id = params[:ofertaId]
 
     if @oferta.save
       render json: { message: "oferta salva com sucesso" }, status: :created

@@ -27,11 +27,6 @@ export const NovoPedido = () => {
         localStorage.removeItem("qtdPedidos")
     }, [])
 
-
-    // useEffect(() => {
-    //     setInputValorFinal(inputvalorfinal)
-    // },[ inputvalorfinal]);
-
     // funcao que adiciona ou remove item do carrinho
     const carrinhoFunction = (item, opcao) => {
         if (opcao === "+") {
