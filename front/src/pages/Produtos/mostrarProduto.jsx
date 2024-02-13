@@ -106,7 +106,7 @@ export const MostrarProduto = () => {
     return (
         <>
             <Navbar />
-                <AreaConteudo conteudo_titulo="Adicionar Produto" conteudo_corpo={
+                <AreaConteudo conteudo_titulo="Salvar Produto" conteudo_corpo={
                     <div className="row">
                         <div className="col-12 mb-3 d-flex justify-content-end">
                             <Button botao_tipo="submit" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>

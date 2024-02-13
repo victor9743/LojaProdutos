@@ -1,52 +1,61 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
+import { useParams } from "react-router-dom";
 import InputMask from 'react-input-mask';
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router";
-import { Aviso } from "../../components/Aviso";
 
-
-export const NovoProduto = () => {
+export const MostrarOferta = () => {
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
-    const [preco, setPreco] = useState("");
-    const [desconto, setDesconto] = useState("");
-    const [descontoAtivo , setDescontoAtivo] = useState();
-    const location = useLocation();
+    const [preco, setPreco] = useState(0);
+    const params = useParams();
     const navigate = useNavigate();
-    const [aviso, setAviso] = useState(true);
 
     useEffect(() => {
-        setTimeout(()=> {
-            setAviso(false);
-        }, 5000)
-        
-    }, [location]);
+        fetch(`http://localhost:3000/produtos/${params.id}`)
+        .then((r) => r.json())
+        .then((r) => {
+            setNome(r.nome);
+            setDescricao(r.nome);
+            setPreco(r.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+        });
+    }, [params])
 
+    useEffect(() => {
+        setNome(nome);
+    },[nome])
 
+    useEffect(() => {
+        setDescricao(descricao);
+    },[descricao])
+
+    useEffect(() => {
+        setPreco(preco);
+    },[preco])
+    
     const salvar = () => {
-        fetch('http://localhost:3000/produtos', {
-            method: "POST",
+        fetch(`http://localhost:3000/ofertas/${params.id}`, {
+            method: "PUT",
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 nome: nome,
                 descricao: descricao,
-                preco: parseFloat(preco.slice(2).replace(',', '.')),
-                desconto: parseFloat(desconto),
-                descontoAtivo: descontoAtivo
+                preco: parseFloat(preco.slice(2).replace(',', '.'))
             })
 
         })
         .then(response => response.json())
-        .then(data => navigate("/", {state: data.message}))
+        .then((data) => {
+            navigate("/ofertas", { state: data});
+        })
         .catch((error) => {
-            navigate("/produtos/novo");
+            alert(error);
         });
     }
 
@@ -65,16 +74,13 @@ export const NovoProduto = () => {
         setPreco(formatarValorMonetario(formattedValue));
     };
 
-    const formatarValorMonetario = (valor) => {
-        // Remover todos os caracteres não numéricos do valor
+    function formatarValorMonetario(valor) {
         const valorNumerico = parseFloat(valor.replace(/[^\d,]/g, '').replace(',', '.'));
     
-        // Verificar se o valor é um número válido
         if (isNaN(valorNumerico)) {
             return '';
         }
     
-        // Formatar o valor como um valor monetário
         const valorFormatado = valorNumerico.toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL'
@@ -82,35 +88,26 @@ export const NovoProduto = () => {
     
         return valorFormatado;
     }
-
+    
     return (
         <>
             <Navbar />
-                { aviso && <Aviso aviso_class="alert alert-info" mensagem={location.state} /> }
-                <AreaConteudo conteudo_titulo="Adicionar Produto" conteudo_corpo={
+                <AreaConteudo conteudo_titulo="Salvar Oferta" conteudo_corpo={
                     <div className="row">
                         <div className="col-12 mb-3 d-flex justify-content-end">
                             <Button botao_tipo="submit" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="nome" className="form-label">Nome</label>
-                            <Input input_tipo="text" input_class="form-control" input_id="nome" input_funcao={(e)=> { setNome(e.target.value) }} />
-                            
+                            <Input input_tipo="text" input_class="form-control" input_id="nome" input_funcao={(e)=> { setNome(e.target.value) }} input_value={nome} />
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="descricao" className="form-label">Descrição</label>
-                            <Input input_tipo="text" input_class="form-control" input_id="descricao" input_funcao={(e)=> { setDescricao(e.target.value) }} />
+                            <Input input_tipo="text" input_class="form-control" input_id="descricao" input_funcao={(e)=> { setDescricao(e.target.value) }} input_value={descricao} />
                         </div>
                         <div className="col-md-6 mb-3">
                             <label htmlFor="preco" className="form-label">Preço</label>
-                            <InputMask type="text" className="form-control" placeholder="R$ 0,00" id="money" name="money" value={preco} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-6 mb-3">
-                            <label htmlFor="desconto" className="form-label">Desconto</label>
-                            <Input input_tipo="text" input_class="form-control" input_id="desconto" input_funcao={(e)=> { setDesconto(e.target.value) }} />
-                        </div>
-                        <div className="col-12 d-flex justify-content-end">
-                            <input className="mr-3" type="checkbox" onClick={(e) => {setDescontoAtivo(e.target.checked)}} /> Ativar desconto ?
+                            <InputMask mask="" type="text" className="form-control" placeholder="R$ 0,00" id="money" name="money" value={preco} onChange={handleChange} />
                         </div>
                     </div>
                 }/>

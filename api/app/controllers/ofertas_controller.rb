@@ -33,7 +33,15 @@ class OfertasController < ApplicationController
       "pedido_id" => params[:pedido_id]
     })
 
-    params[:tipoOferta] == "1" ? @oferta.produto_id = params[:ofertaId] : @oferta.pedido_id = params[:ofertaId]
+    if params[:tipoOferta] == "1"
+      @oferta.produto_id = params[:ofertaId]
+
+    else
+      @oferta.pedido_id = params[:ofertaId]
+
+      @pedido = Pedido.find(@oferta.pedido_id)
+      @pedido.update(valor_final: ( @pedido.valor_final + @oferta.preco ))
+    end
 
     if @oferta.save
       render json: { message: "oferta salva com sucesso" }, status: :created
@@ -48,9 +56,7 @@ class OfertasController < ApplicationController
     if @oferta.update({
       "nome" => params[:nome],
       "descricao" => params[:descricao],
-      "preco" => params[:preco],
-      "produto_id" => params[:produto_id],
-      "pedido_id" => params[:pedido_id]
+      "preco" => params[:preco]
     })
 
       render json: { message: "oferta atualizada com sucesso" }, status: :created

@@ -57,10 +57,9 @@ export const NovaOferta = () => {
 
         })
         .then(response => response.json())
-        .then(data => navigate("/ofertas"))
+        .then(data => navigate("/ofertas", { state: data }))
         .catch((error) => {
-            navigate("/ofertas/novo");
-            alert(error.message);
+            navigate("/ofertas/novo", { state: error });
         });
     }
 
@@ -128,7 +127,7 @@ export const NovaOferta = () => {
     return (
         <>
             <Navbar />
-                <AreaConteudo conteudo_titulo="Adicionar Oferta" conteudo_corpo={
+                <AreaConteudo conteudo_titulo="Salvar Oferta" conteudo_corpo={
                     <div className="row">
                         <div className="col-12 mb-3 d-flex justify-content-end">
                             <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar"></Button>

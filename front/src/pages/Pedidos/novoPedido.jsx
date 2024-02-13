@@ -3,18 +3,21 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { Button } from "../../components/Button";
-import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartPlus, faCartArrowDown, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router";
+import { Aviso } from "../../components/Aviso";
 
 export const NovoPedido = () => {
     const [produtos, setProdutos] = useState([]);
     const [carrinho, setCarrinho] = useState([]);
-    const [pedido, setPedido] = useState([]);
     const [inputvalorfinal, setInputValorFinal] = useState([]);
     const [save, setSave] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const [aviso, setAviso] = useState(true);
     
 
     useEffect(() => {
@@ -25,7 +28,14 @@ export const NovoPedido = () => {
         })
         localStorage.removeItem("qtdProdutos")
         localStorage.removeItem("qtdPedidos")
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        setTimeout(()=> {
+            setAviso(false);
+        }, 5000)
+        
+    }, [location]);
 
     // funcao que adiciona ou remove item do carrinho
     const carrinhoFunction = (item, opcao) => {
@@ -109,20 +119,26 @@ export const NovoPedido = () => {
     const salvar = () => {
 
         let qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
-        
+        let valorFinal = 0;
+
+        qtdProdutos.forEach((produto) => {
+            valorFinal += produto.valorFinal;
+        });
+
         fetch('http://localhost:3000/pedidos', {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                produtos: qtdProdutos
+                produtos: qtdProdutos,
+                valorFinal: valorFinal.toFixed(2)
             })
         })
         .then(response => response.json())
-        .then(data => navigate("/pedidos"))
+        .then(data => navigate("/pedidos", {state: data} ))
         .catch((error) => {
-            navigate("/pedidos/novo");
+            navigate("/pedidos/novo", {state: error});
         });
 
     }
@@ -130,7 +146,8 @@ export const NovoPedido = () => {
     return (
         <>
             <Navbar />
-                <AreaConteudo conteudo_titulo="Adicionar Pedido" conteudo_corpo={
+            { aviso && <Aviso aviso_class="alert alert-info" mensagem={location.state} /> }
+                <AreaConteudo conteudo_titulo="Salvar Pedido" conteudo_corpo={
                     <div className="">
                         <div className="border p-3">
                             <div className="col-md-6 mb-3">

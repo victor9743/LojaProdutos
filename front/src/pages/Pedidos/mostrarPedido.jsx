@@ -9,15 +9,16 @@ export const MostrarPedido = () => {
     const [pedido, setPedido] = useState("");
     const [produtos, setProdutos] = useState([]);
     const [pedidoProduto, setPedidoProduto] = useState([]);
-    const [precofinal, setPrecoFinal] = useState(0);
     const [totaldesconto, setTotalDesconto] = useState(0);
+    const [ofertas, setOfertas] = useState([]);
     const params = useParams();
 
     useEffect(() => {
         fetch(`http://localhost:3000/pedidos/${params.id}`)
         .then((r) => r.json())
         .then((r) => {
-            setPedido(r.pedido)
+            setOfertas(r.ofertas);
+            setPedido(r.pedido);
             setPedidoProduto(r.pedido_produto);
             setProdutos(r.produtos);
             mostrarValorFinal(r.pedido_produto);
@@ -29,14 +30,8 @@ export const MostrarPedido = () => {
         return produtos.find((p) => p.id === produto).nome;
     }
 
-    const mostrarValorFinal = (pedidoProduto) => {
-        let valor = 0;
-
-        pedidoProduto.forEach(produto => {
-            valor += produto.preco_final
-        });
-
-        setPrecoFinal(valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    const mostrarValorFinal = (valor) => {
+        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     }
 
     const mostrarTotalDesconto = (pedidoProduto, produtoList) => {
@@ -50,7 +45,6 @@ export const MostrarPedido = () => {
 
         setTotalDesconto(desconto);
     }
-
     return (
         <>
             <Navbar />
@@ -58,11 +52,14 @@ export const MostrarPedido = () => {
                     <div className="row">
                         <div className="col-12 mb-2 row">
                             <div className="col-md-7">
-                                <label>Preço total do pedido:</label> <strong>{precofinal}</strong>
+                                <label>Preço total do pedido:</label> <strong>{pedido.valor_final ? mostrarValorFinal(pedido.valor_final) : pedido.valor_final}</strong>
                             </div>
                             <div className="col-md-5">
                                 <label>Total de desconto:</label> <strong>{totaldesconto}%</strong>
                             </div>
+                        </div>
+                        <div className="row">
+                            <h4>Produtos</h4>
                         </div>
                         {pedidoProduto.map((produto, key)=> {
                             return (
@@ -90,6 +87,34 @@ export const MostrarPedido = () => {
                                 
                             );
                         })}
+
+                        <div className="col-12">
+                            <h4>Ofertas</h4>
+                        </div>
+                        { ofertas.length > 0 ? (
+                            ofertas.map((oferta, key) => {
+                                return (
+                                    <div className="card mb-3" key={key}>
+                                        <div className="card-body row p-5">
+                                            <div className="col-12 mb-2">
+                                                <label>Nome da oferta:</label>
+                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={oferta.nome} />
+                                            </div>
+                                            <div className="col-12 mb-2">
+                                                <label>Descrição:</label> 
+                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={oferta.descricao} />
+                                            </div>
+                                            <div className="col-12 mb-2">
+                                                <label>Valor:</label> 
+                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={oferta.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        ) : (
+                            <h5 className="text-center">Nenhuma oferta associada ao produto</h5>
+                        ) }
                     </div>
                 }/>
             <Footer />
