@@ -106,11 +106,9 @@ export const NovaOferta = () => {
     }
 
     const disabledAddOferta = (item) => {
-        console.log(item);
         if (oferta === item) {
             return true;
         }
-        
         return false;
     }
 

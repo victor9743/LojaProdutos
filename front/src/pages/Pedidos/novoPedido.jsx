@@ -3,19 +3,16 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
 import { Button } from "../../components/Button";
-import { Input } from "../../components/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router";
-import { Aviso } from "../../components/Aviso";
 import { Table } from "../../components/Tabela";
 
 export const NovoPedido = () => {
     const [produtos, setProdutos] = useState([]);
     const navigate = useNavigate();
-    const location = useLocation();
     let carrinho = [];
+
     useEffect(() => {
         fetch('http://localhost:3000/produtos')
         .then((r) => r.json())

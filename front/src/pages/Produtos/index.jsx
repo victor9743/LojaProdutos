@@ -9,25 +9,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router";
-import { Aviso } from "../../components/Aviso";
 
 export const Produtos = () => {
     const [produtos, setProdutos] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
-    const [aviso, setAviso] = useState(true);
 
     useEffect(() => {
         fetch("http://localhost:3000/produtos")
         .then((r) => r.json())
         .then((r) => setProdutos(r))
-    }, [location]);
-
-    useEffect(() => {
-        setTimeout(()=> {
-            setAviso(false);
-        }, 5000)
-        
     }, [location]);
 
     const RemoverProduto = (id) => {
@@ -38,9 +29,9 @@ export const Produtos = () => {
             },
         })
         .then(response => response.json())
-        .then(data => navigate("/", { state: data }))
+        .then(data => navigate("/"))
         .catch((error) => {
-            navigate("/produtos/novo", { state: error })
+            navigate("/")
         });
 
     }
@@ -70,7 +61,7 @@ export const Produtos = () => {
                                 produtos.map((produto, key) => {
                                     return (
                                         <tr key={key}>
-                                            <td scope="row">{produto.id}</td>
+                                            <td>{produto.id}</td>
                                             <td>{produto.nome}</td>
                                             <td>{produto.descricao}</td>
                                             <td>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>

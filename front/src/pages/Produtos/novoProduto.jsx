@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { AreaConteudo } from "../../components/AreaConteudo";
@@ -6,8 +6,6 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import InputMask from 'react-input-mask';
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router";
-import { Aviso } from "../../components/Aviso";
 
 
 export const NovoProduto = () => {
@@ -16,17 +14,7 @@ export const NovoProduto = () => {
     const [preco, setPreco] = useState("");
     const [desconto, setDesconto] = useState("");
     const [descontoAtivo , setDescontoAtivo] = useState();
-    const location = useLocation();
     const navigate = useNavigate();
-    const [aviso, setAviso] = useState(true);
-
-    useEffect(() => {
-        setTimeout(()=> {
-            setAviso(false);
-        }, 5000)
-        
-    }, [location]);
-
 
     const salvar = () => {
         fetch('http://localhost:3000/produtos', {
@@ -86,7 +74,6 @@ export const NovoProduto = () => {
     return (
         <>
             <Navbar />
-                { aviso && <Aviso aviso_class="alert alert-info" mensagem={location.state} /> }
                 <AreaConteudo conteudo_titulo="Adicionar Produto" conteudo_corpo={
                     <div className="row">
                         <div className="col-12 mb-3 d-flex justify-content-end">
