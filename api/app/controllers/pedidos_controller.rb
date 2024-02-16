@@ -35,20 +35,23 @@ class PedidosController < ApplicationController
     @produtos = params[:produtos]
     @pedido = Pedido.new({
       "numero_pedido" => (Time.now.to_f * 1000).to_i,
-      "valor_final" => params[:valorFinal]
+      "valor_final" => formatarValor(params[:valorFinal])
     })
-
 
     if @pedido.save
       @produtos.each do |produto|
-        @produto = Produto.find(produto["id"])
+        if params[:desconto_ativo]
+          @preco_final = produto[:preco_desconto] * produto[:quantidade]
+        else
+          @preco_final = produto[:preco] * produto[:quantidade]
+        end
 
         PedidoProduto.create({
           "pedido_id" => @pedido.id,
-          "produto_id" => @produto.id,
-          "qtd_produto" => produto["qtd"],
-          "preco_final" => produto["valorFinal"],
-          "desconto" => @produto.desconto
+          "produto_id" => produto["id"],
+          "qtd_produto" => produto["quantidade"],
+          "preco_final" => formatarValor(@preco_final),
+          "desconto" =>  produto[:desconto]
         })
       end
 

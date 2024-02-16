@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_12_231701) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_16_005544) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,6 +49,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_12_231701) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "desconto_ativo", default: false
+    t.boolean "is_bag", default: false
+    t.integer "quantidade", default: 1
+    t.float "preco_desconto", default: 0.0
   end
 
 end

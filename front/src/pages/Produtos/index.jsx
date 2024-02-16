@@ -21,7 +21,7 @@ export const Produtos = () => {
         fetch("http://localhost:3000/produtos")
         .then((r) => r.json())
         .then((r) => setProdutos(r))
-    }, []);
+    }, [location]);
 
     useEffect(() => {
         setTimeout(()=> {
@@ -38,9 +38,9 @@ export const Produtos = () => {
             },
         })
         .then(response => response.json())
-        .then(data => navigate("/produtos", { state: data }))
+        .then(data => navigate("/", { state: data }))
         .catch((error) => {
-            navigate("/ofertas", { state: error })
+            navigate("/produtos/novo", { state: error })
         });
 
     }
@@ -48,13 +48,12 @@ export const Produtos = () => {
     return (
         <>
             <Navbar />
-            { aviso && <Aviso aviso_class="alert alert-info" mensagem={location.state} /> }
             <AreaConteudo conteudo_titulo="Produtos" conteudo_corpo= {
                 <>
                     <div className="d-flex justify-content-end">
                         <LinkUrl link_url="/produtos/novo" link_class="btn btn-success" link_nome="Adicionar" link_style={{color: "white"}} />
                     </div>
-                   <Table 
+                   <Table
                         thead = {
                             <tr>
                                 <th scope="col">#</th>
@@ -75,7 +74,7 @@ export const Produtos = () => {
                                             <td>{produto.nome}</td>
                                             <td>{produto.descricao}</td>
                                             <td>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                                            <td>{produto.desconto}% - {produto.desconto_ativo ? "Ativo" : "Inativo"}</td>
+                                            <td>{produto.desconto_ativo ? `${produto.desconto}% - Desconto ativo` : "Sem desconto"}</td>
                                             <td>
                                                 <LinkUrl link_url={`/produtos/mostrar/${produto.id}`} link_class="btn btn-sm btn-primary" link_nome={<FontAwesomeIcon icon={faSearch} />} link_style={{marginRight: "3%"}} />
                                                 <Button botao_class="btn btn-sm btn-danger" botao_texto={<FontAwesomeIcon icon={faTrash} />} botao_tipo="button" botao_value={produto.id} botao_funcao={() => RemoverProduto(produto.id)}/>

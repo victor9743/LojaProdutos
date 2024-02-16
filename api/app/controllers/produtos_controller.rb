@@ -27,10 +27,14 @@ class ProdutosController < ApplicationController
     @produto = Produto.new({
       "nome" => params[:nome],
       "descricao" => params[:descricao],
-      "preco" => params[:preco],
-      "desconto" => params[:desconto],
-      "desconto_ativo" => params[:descontoAtivo]
+      "preco" => formatarValor(params[:preco]),
+      "desconto" => formatarValor(params[:desconto].to_f)
     })
+
+    if params[:descontoAtivo]
+      @produto.desconto_ativo = params[:descontoAtivo]
+      @produto.preco_desconto = formatarValor(Produto.descontoAtivo(params[:preco], params[:desconto]))
+    end
 
     if @produto.save
       render json: { message: "produto salvo com sucesso" }, status: :created
@@ -42,12 +46,23 @@ class ProdutosController < ApplicationController
   def update
     @produto = Produto.find(params[:id])
 
+    if params[:descontoAtivo]
+      @desconto = formatarValor(params[:desconto])
+      @desconto_ativo = params[:descontoAtivo]
+      @preco_desconto = formatarValor(Produto.descontoAtivo(params[:preco], params[:desconto]))
+    else
+      @desconto = 0
+      @desconto_ativo = false
+      @preco_desconto = 0
+    end
+
     if @produto.update({
       "nome" => params[:nome],
       "descricao" => params[:descricao],
       "preco" => params[:preco],
-      "desconto" => params[:desconto],
-      "desconto_ativo" => params[:descontoAtivo]
+      "desconto" => @desconto,
+      "desconto_ativo" => @desconto_ativo,
+      "preco_desconto" => @preco_desconto
     })
 
       render json: { message: "produto atualizado com sucesso" }, status: :created

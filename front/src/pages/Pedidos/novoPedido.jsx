@@ -5,134 +5,91 @@ import { AreaConteudo } from "../../components/AreaConteudo";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartPlus, faCartArrowDown, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router";
 import { Aviso } from "../../components/Aviso";
+import { Table } from "../../components/Tabela";
 
 export const NovoPedido = () => {
     const [produtos, setProdutos] = useState([]);
-    const [carrinho, setCarrinho] = useState([]);
-    const [inputvalorfinal, setInputValorFinal] = useState([]);
-    const [save, setSave] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const [aviso, setAviso] = useState(true);
-    
-
+    let carrinho = [];
     useEffect(() => {
         fetch('http://localhost:3000/produtos')
         .then((r) => r.json())
         .then((r) => {
             setProdutos(r);
         })
-        localStorage.removeItem("qtdProdutos")
-        localStorage.removeItem("qtdPedidos")
     }, []);
 
-    useEffect(() => {
-        setTimeout(()=> {
-            setAviso(false);
-        }, 5000)
-        
-    }, [location]);
-
-    // funcao que adiciona ou remove item do carrinho
-    const carrinhoFunction = (item, opcao) => {
-        if (opcao === "+") {
-            setCarrinho(prevState => [...prevState, produtos.find(produto => produto.id === item)]);
-        } else {
-            const novoCarrinho = carrinho.filter((c) => c.id !== item);
-            setCarrinho(novoCarrinho);
-
-            if(novoCarrinho.length === 0){
-                setSave(false);
-            }
-        }
-    }
-
-    // verifica se um item ja foi incluso
-    const disabledAddCarrinho = (item) => {
-        if (carrinho.length > 0) {
-            if (carrinho.some(c => c.id === item)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-
-    const disabledRemoveCarrinho = (item) => {
-        if (carrinho.length > 0) {
-            if (carrinho.some(c => c.id === item)) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-    const calculaValorDesconto = (valor, desconto) => {
+    const descontoAtivo = (valor, desconto) => {
         const valorDesconto = valor * (desconto / 100);
-
         return valor - valorDesconto;
-
     }
 
-    const quantidadeProduto = (produtoId, quantidade, preco) => {
-        let qtdProdutos = localStorage.getItem("qtdProdutos");
-        let valorFinal = quantidade * preco;
-
-        if (quantidade > 0) {
-            if (qtdProdutos) {
-                qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
-
-                let found = false;
-                qtdProdutos.forEach((p, key) => {
-                    if (p.id === produtoId) {
-                        qtdProdutos[key].qtd = quantidade
-                        qtdProdutos[key].valorFinal = valorFinal
-                        qtdProdutos[key].valorFinalMonetario = valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-                        found = true;
-                    }
-                });
-
-                if (!found) {
-                    qtdProdutos.push({ id: produtoId, qtd: quantidade, valorFinal: valorFinal, valorFinalMonetario: valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) });
-                }
-
-                localStorage.setItem("qtdProdutos", JSON.stringify(qtdProdutos));
-            } else {
-                localStorage.setItem("qtdProdutos", JSON.stringify([{ id: produtoId, qtd: quantidade, valorFinal: valorFinal, valorFinalMonetario: valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }]));
+    if (produtos.length > 0) {
+        produtos.forEach((produto)  => {
+            if (produto.is_bag) {
+                carrinho.push(produto);
             }
+        })  
+    }
+
+    const formatarPreco = (preco) => {
+        return preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    }
+
+    const adicionarAoCarrinho = (item) => {
+        const itemAdicionado = produtos.find((p) => p.id === item);
+        itemAdicionado.is_bag = !itemAdicionado.is_bag;
+
+        setProdutos(produtos.map(produto => produto.id === item ? itemAdicionado : produto));
+    }
+
+    const mudarQuantidade = (e, item, incremento) => {
+        e.stopPropagation();
+        const itemAdicionado = produtos.find((p) => p.id === item);
+
+        if (incremento) {
+            itemAdicionado.quantidade =  itemAdicionado.quantidade + 1; 
+        } else {
+            itemAdicionado.quantidade =  itemAdicionado.quantidade - 1;
         }
-        setSave(true)
-    }
-    const valorFinal = (id) => {
-        console.log(inputvalorfinal);
-        let qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
-        console.log(qtdProdutos);
-        // console.log(inputvalorfinal[id]);
-        // return inputvalorfinal[id].toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        setProdutos(produtos.map(produto => produto.id === item ? itemAdicionado : produto))
     }
 
-    const salvar = () => {
-
-        let qtdProdutos = JSON.parse(localStorage.getItem("qtdProdutos"));
+    const valorFinal = (format) => {
         let valorFinal = 0;
 
-        qtdProdutos.forEach((produto) => {
-            valorFinal += produto.valorFinal;
-        });
+        carrinho.forEach((c) => {
+            if (c.desconto_ativo) {
+                valorFinal += c.preco_desconto * c.quantidade;
+            } else {
+                valorFinal += c.preco * c.quantidade;
+            }
+        })
 
+        if (format) {
+            valorFinal = formatarPreco(valorFinal);
+        }
+
+        return valorFinal;
+    }
+
+    
+
+    const salvar = () => {
         fetch('http://localhost:3000/pedidos', {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                produtos: qtdProdutos,
-                valorFinal: valorFinal.toFixed(2)
+                produtos: carrinho,
+                valorFinal: valorFinal(false)
             })
         })
         .then(response => response.json())
@@ -146,7 +103,6 @@ export const NovoPedido = () => {
     return (
         <>
             <Navbar />
-            { aviso && <Aviso aviso_class="alert alert-info" mensagem={location.state} /> }
                 <AreaConteudo conteudo_titulo="Salvar Pedido" conteudo_corpo={
                     <div className="">
                         <div className="border p-3">
@@ -157,12 +113,12 @@ export const NovoPedido = () => {
                                 <div className="row">
                                     {produtos.map ((produto, key) => {
                                         return (
-                                            <div className="col-md-3 mb-3" key={key}>
-                                                <div className="card">
-                                                    <div className="card-header text-light" style={{background: "#2C3E50"}}>
-                                                        {produto.nome}
-                                                    </div>
-                                                    <div className="card-body">
+                                            <div className="col-md-4 mb-3" key={key} onClick={() => adicionarAoCarrinho(produto.id)}>
+                                            <div className={`card ${produto.is_bag && 'border-success'}`}>
+                                                <div className="card-header text-light" style={{background: "#2C3E50"}}>
+                                                    {produto.nome}
+                                                </div>
+                                                <div className="card-body">
                                                         <div className="">
                                                             <label><strong>Descrição:</strong></label><br/>
                                                             <span>{produto.descricao}</span>
@@ -170,33 +126,39 @@ export const NovoPedido = () => {
                                                         <div>
                                                             <label><strong>Preço:</strong></label><br/>
                                                             <span>{(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                                            { produto.desconto_ativo && 
+                                                                    <span className="text-success m-2">
+                                                                        <FontAwesomeIcon icon={faArrowDown} /> {produto.desconto}% { descontoAtivo(produto.preco, produto.desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                                    </span>
+                                                            }
                                                         </div>
-                                                        { produto.desconto_ativo ? (
-                                                                <div className="text-success">
-                                                                    <label className="text-dark"><strong>Preço com desconto:</strong></label><br/>
-                                                                    <span style={{ marginRight: "5px"}}>
-                                                                        { calculaValorDesconto (produto.preco, produto.desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
-                                                                    </span>
-                                                                    <span > 
-                                                                        <FontAwesomeIcon icon={faArrowDown} /> {produto.desconto}%
-                                                                    </span>
-                                                                </div>
-                                                            ): (
-                                                                <div className="text-success">
-                                                                    <label className="text-dark">Nenhum desconto atribuido</label>
-                                                                </div>
-                                                            )
-                                                        }
-                                                        
-                                                    </div>
-                                                    <div className="text-body-secondary d-flex justify-content-between">
-                                                        <button className="btn btn-sm btn-success bg-success col-6" onClick={()=> carrinhoFunction(produto.id, "+")} disabled = {disabledAddCarrinho(produto.id)} ><FontAwesomeIcon icon={faCartPlus} /></button>
-                                                        
-                                                        <button className="btn btn-danger btn-sm bg-danger col-6" onClick={() => carrinhoFunction(produto.id, "-")} disabled={disabledRemoveCarrinho(produto.id)} ><FontAwesomeIcon icon={faCartArrowDown} /></button>
-                                                        
-                                                    </div>
+                                                    {produto.is_bag &&
+                                                        <div className="mt-3 d-flex justify-content-between">
+                                                            <div>
+                                                                <Button 
+                                                                    botao_tipo="button"
+                                                                    botao_class="btn btn-danger"
+                                                                    botao_disabled={produto.quantidade <= 1}
+                                                                    botao_funcao={(e) => mudarQuantidade(e, produto.id, false)}
+                                                                    botao_texto="-"
+                                                                />
+                                                            </div>
+                                                            <div className="p-1">
+                                                                <span>{produto.quantidade}</span>
+                                                            </div>
+                                                            <div>
+                                                                <Button 
+                                                                    botao_tipo="button"
+                                                                    botao_class="btn btn-success"
+                                                                    botao_funcao={(e) => mudarQuantidade(e, produto.id, true)}
+                                                                    botao_texto="+"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
+                                        </div>
                                         )
                                     
                                     })}
@@ -207,67 +169,43 @@ export const NovoPedido = () => {
                                 </div>
                             ) }
                         </div>
-                        { carrinho.length > 0 ? (
-                            <div className="accordion mt-3" id="carrinho">
-                                <div className="accordion-item">
-                                    <h2 className="accordion-header">
-                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                            Visualizar Carrinho
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseOne" className="accordion-collapse collapse" data-bs-parent="#carrinho">
-                                        <div className="accordion-body">
-                                            { carrinho.map((c , key) => {
-                                                return (
-                                                    <div className="card mb-3" key={key}>
-                                                        <div className="card-header">
-                                                            Produto: {c.nome}
-                                                        </div>
-                                                        <div className="card-body row">
-                                                            <div className="col-12 mb-3">
-                                                                <label>Descrição:</label> 
-                                                                <Input input_tipo="text" input_class="form-control" input_disabled={true} input_value={c.descricao} />
-                                                            </div>
-                                                            <div className="col-md-6">
-                                                                <label>Informe a Quantidade</label>
-                                                                <input type="number"
-                                                                className="form-control"
-                                                                placeholder="Informe a quantidade" 
-                                                                min="1"
-                                                                onChange={(e) => quantidadeProduto (c.id, e.target.value, c.preco)}
-                                                                />
-                                                            </div>
-                                                            <div className="col-md-6">
-                                                                <label>Valor Final: </label>
-                                                                <Input 
-                                                                input_tipo="text" 
-                                                                input_class="form-control" 
-                                                                input_disabled={true}
-                                                                // input_value={ c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
-                                                                input_value={ 
-                                                                    inputvalorfinal.length === 0 ? c.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : valorFinal(c.id)
-                                                                }
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            }) }
-                                        </div>
-                                        <div className="d-flex justify-content-end p-3">
-                                            { save  && 
-                                                <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Finalizar Pedido" />
+                        <div className="border p-3 mt-3">
+                            <div className="mb-3">
+                                <h5>Resumo</h5>
+                                    {carrinho.length > 0 && 
+                                        <Table 
+                                            thead={
+                                                <tr>
+                                                    <th>Produto</th>
+                                                    <th>Quantidade</th>
+                                                    <th>Valor Total</th>
+                                                </tr>
                                             }
+                                            tbody ={
+                                                carrinho.map((c, key) => {
+                                                    return (
+                                                        <tr key={key}>
+                                                            <td>{c.nome}</td>
+                                                            <td>{c.quantidade}</td>
+                                                            <td>{formatarPreco( c.desconto_ativo ? (c.preco_desconto * c.quantidade) : (c.preco * c.quantidade)) }</td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        />
+                                    }
+                                    <div className="card">
+                                        <div className="card-body" style={{textAlign: "right"}}>
+                                            <strong>Valor total:</strong> {valorFinal(true)}
                                         </div>
                                     </div>
-                                </div>
+                                    {carrinho.length > 0 && 
+                                        <div className="d-flex justify-content-end mt-3">
+                                            <Button botao_tipo="button" botao_class="btn btn-success" botao_funcao={salvar} botao_texto="Salvar" />
+                                        </div>
+                                    }
                             </div>
-                        ) : (
-                            <div className="text-center mt-3">
-                                <h5>Carrinho vazio</h5>
-                            </div>
-                        ) }
-                        
+                        </div>
                     </div>
                 }/>
 
